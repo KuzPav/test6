@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/05 DS/coursera/uni3.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="6858"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,8:mainCustomer"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">-------------------- CUSTOMER --------------------------------
+
+  CREATE TABLE Customer 
+   (CustNo VARCHAR(8), 
+    CustName VARCHAR(30) CONSTRAINT CustNameNotNull NOT NULL, 
+    Address VARCHAR(50) CONSTRAINT AddressNotNull NOT NULL, 
+    Internal CHAR(1) CONSTRAINT InternalNotNull NOT NULL, 
+    Contact VARCHAR(35) CONSTRAINT ContractNotNull NOT NULL, 
+    Phone VARCHAR(11) CONSTRAINT CPhoneNotNull NOT NULL, 
+    City VARCHAR(30) CONSTRAINT CityNotNull NOT NULL,
+    State VARCHAR(2) CONSTRAINT StateNotNull NOT NULL, 
+    Zip VARCHAR(10) CONSTRAINT zipNotNull NOT NULL,
+    CONSTRAINT PK_CUSTOMER PRIMARY KEY (CustNo) ) ;
+
+
+
+-------------------- FACILITY --------------------------------
+
+  CREATE TABLE Facility
+  (FacNo VARCHAR(8), 
+   FacName VARCHAR(30) CONSTRAINT FacNameNotNull NOT NULL,
+   CONSTRAINT PK_FACILITY PRIMARY KEY (FacNo) );  
+
+   
+
+-------------------- LOCATION --------------------------------
+
+  CREATE TABLE Location
+  (LocNo VARCHAR(8), 
+   FacNo VARCHAR(8) CONSTRAINT FacNoFKNotNull NOT NULL, 
+   LocName VARCHAR(30) CONSTRAINT LocNameNotNull NOT NULL,
+   CONSTRAINT PK_LOCATION PRIMARY KEY (LocNo),
+   CONSTRAINT FK_FACNO FOREIGN KEY (FacNo) REFERENCES FACILITY (FacNo) );
+
+
+-------------------- EMPLOYEE --------------------------------
+-- Problem 1 solution
+
+ CREATE TABLE Employee 
+  (EmpNo VARCHAR(8), 
+   EmpName VARCHAR(35) CONSTRAINT EmpNameNotNull NOT NULL, 
+   Department VARCHAR(25) CONSTRAINT DepartmetnNotNull NOT NULL, 
+   Email VARCHAR(30) CONSTRAINT EmailNotNull NOT NULL, 
+   Phone VARCHAR(10) CONSTRAINT EPhoneNotNull NOT NULL, 
+   CONSTRAINT PK_EMPLOYEE PRIMARY KEY (EmpNo) ) ;
+
+
+
+-------------------- RESOURCETBL --------------------------------
+-- Problem 2 solution
+
+  CREATE TABLE ResourceTbl
+  (ResNo VARCHAR(8), 
+   ResName VARCHAR(30) CONSTRAINT ResNameNotNull NOT NULL, 
+   Rate DECIMAL(15,4) CONSTRAINT RateNotNull NOT NULL,
+   CONSTRAINT RatePositive CHECK (Rate &gt; 0), 
+   CONSTRAINT PK_RESOURCE PRIMARY KEY (ResNo) );
+
+
+-------------------- EVENTREQUEST --------------------------------
+-- Problem 3 solution
+
+  CREATE TABLE EventRequest
+  (EventNo VARCHAR(8), 
+   DateHeld DATE CONSTRAINT DateheldNotNull NOT NULL, 
+   DateReq DATE CONSTRAINT DateReqNotNull NOT NULL, 
+   CustNo VARCHAR(8) CONSTRAINT CustNoFKNotNull NOT NULL, 
+   FacNo VARCHAR(8) CONSTRAINT FacNoFK2NotNull NOT NULL, 
+   DateAuth DATE, 
+   Status VARCHAR(20) CONSTRAINT StatusNotNull NOT NULL, 
+   EstCost DECIMAL(15,4) CONSTRAINT EstCostNotNull NOT NULL, 
+   EstAudience INTEGER CONSTRAINT EstAudienceNotNull NOT NULL, 
+   BudNo VARCHAR(8),
+   CONSTRAINT ValidStatus CHECK (Status IN ('Pending', 'Denied', 'Approved')),
+   CONSTRAINT EstAudiencePositive CHECK (EstAudience &gt; 0),
+   CONSTRAINT PK_EVENTREQUEST PRIMARY KEY (EventNo),
+   CONSTRAINT FK_EVENT_FACNO FOREIGN KEY (FacNo) REFERENCES FACILITY (FacNo),
+   CONSTRAINT FK_CUSTNO FOREIGN KEY (CustNo) REFERENCES CUSTOMER (CustNo) ); 
+
+  
+
+-------------------- EVENTPLAN --------------------------------
+-- Problem 4 solution
+
+  CREATE TABLE EventPlan
+  (PlanNo VARCHAR(8), 
+   EventNo VARCHAR(8) CONSTRAINT EventNoFKNotNull NOT NULL, 
+   WorkDate DATE CONSTRAINT WorkDateNotNull NOT NULL, 
+   Notes VARCHAR(50), 
+   Activity VARCHAR(50) CONSTRAINT ActivityNotNull NOT NULL, 
+   EmpNo VARCHAR(8),
+   CONSTRAINT PK_EVENTPLAN PRIMARY KEY (PlanNo), 
+   CONSTRAINT FK_EMPNO FOREIGN KEY (EmpNo) REFERENCES EMPLOYEE (EmpNo),
+   CONSTRAINT FK_EVENTNO FOREIGN KEY (EventNo) REFERENCES EVENTREQUEST (EventNo) ); 
+
+  
+
+-------------------- EVENTPLANLINE --------------------------------
+-- Problem 5 solution
+
+  CREATE TABLE EventPlanLine
+  (PlanNo VARCHAR(8), 
+   LineNo INTEGER CONSTRAINT LineNoNotNull NOT NULL, 
+   TimeStart TIMESTAMP CONSTRAINT TimeStartNotNull NOT NULL, 
+   TimeEnd TIMESTAMP CONSTRAINT TimeEndNotNull NOT NULL, 
+   ResourceCnt INTEGER CONSTRAINT NumberFldNotNull NOT NULL, 
+   LocNo VARCHAR(8) CONSTRAINT LocNoFKNotNull NOT NULL, 
+   ResNo VARCHAR(8) CONSTRAINT ResNoFKNotNull NOT NULL,
+   CONSTRAINT TimeStartEndRelationship CHECK (TimeStart &lt; TimeEnd), 
+   CONSTRAINT PK_EVENTPLANLINE PRIMARY KEY (PlanNo, LineNo),
+   CONSTRAINT FK_LOCNO FOREIGN KEY (LocNo) REFERENCES LOCATION (LocNo), 
+   CONSTRAINT FK_RESNO FOREIGN KEY (ResNo) REFERENCES RESOURCETBL (ResNo), 
+   CONSTRAINT FK_PLANNO FOREIGN KEY (PlanNo) REFERENCES EVENTPLAN (PlanNo) ON DELETE CASCADE ); 
+
+ 
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
